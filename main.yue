@@ -1,0 +1,49 @@
+
+
+
+
+class Brainfuck
+    new: (@code) =>
+        @cursor = 1
+        @pointer = 1
+        @data = [0 for i = 1, 30000]
+        @loop_stack = {}
+    run: =>
+        while @cursor <= #@code
+            current_char = @code\sub @cursor, @cursor
+            -- print current_char
+            if current_char == "+"
+                @data[@pointer] += 1
+                @data[@pointer] -= 256 if @data[@pointer] > 255
+            elseif current_char == "-"
+                @data[@pointer] -= 1
+                @data[@pointer] += 256 if @data[@pointer] < 0
+            elseif current_char == ">"
+                @pointer += 1
+                @pointer -= 30000 if @pointer > 30000
+            elseif current_char == "<"
+                @pointer -= 1
+                @pointer += 30000 if @pointer <= 0
+            elseif current_char == "."
+                io.write string.char @data[@pointer]
+            elseif current_char == ","
+                @data[@pointer] = string.byte io.read 1
+            elseif current_char == "["
+                @loop_stack[] = @cursor
+            elseif current_char == "]"
+                if @data[@pointer] == 0
+                    table.remove @loop_stack
+                else
+                    @cursor = @loop_stack[#@loop_stack]
+            @cursor += 1
+
+
+
+a = Brainfuck "+[-->-[>>+>-----<<]<--<---]>-.>>>+.>>..+++[.>]<<<<.+++.------.<<-.>>>>+." -- Doesn't work yet, everything else work
+-- a = Brainfuck "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.+.+.+.+."
+-- a = Brainfuck "++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++."
+-- a = Brainfuck "<<<<<+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.+.+.+.+."
+
+
+a\run!
+
